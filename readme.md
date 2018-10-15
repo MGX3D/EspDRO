@@ -1,14 +1,14 @@
 EspDRO - ESP32 DIY Digital Readout
 ----
 
-EspDRO reads and proxies data from SPC capable (serial) digital calipers and indicators without any additional electronical components but using instead the built-in ADC in ESP32. It allows building custom, high-resolution measuring instruments, fully capable DRO (Digital Readout) panels for CNC/3D Printers, upgrade open-loop robots to closed-loop, point cloud 3D scanners, etc.
+EspDRO reads and proxies data from SPC capable (serial) digital calipers and indicators without any additional electronic components but using instead the built-in ADC in ESP32. It enables building custom, high-resolution measuring instruments, fully capable DRO (Digital Readout) panels for CNC/3D Printers, upgrade open-loop robots to closed-loop, point cloud 3D scanners, etc.
 
-It costs ~$10 to build and it's only 500 lines of code - it's amazing how powerful and affordable IoT chips (like ESP32) have become. 
+It costs $10-$20 to build (excluding instruments and time) and it's only 500 lines of code - it's amazing how powerful and affordable IoT chips (like ESP32) have become. 
 
 Overview:
 ---
 - Reads and re-transmits the instrumet data over multiple channels:
-    - **WebSockets broadcasting**: allows building simple, low latency clients (10 lines of code python sample [PyDRO](examples/PyDRO) included as well as offline JavaScript/HTML [jsDRO](/examples/jsDRO) )
+    - **WebSockets broadcasting**: allows building simple, low latency clients (10 lines of code python sample [PyDRO](examples/PyDRO/) included as well as JavaScript/HTML [jsDRO](/examples/jsDRO) )
     - **Built-in web server**:  allows reading the data from browser/phone/tablet without any additional apps. Big display!
     - **REST APIs** and mDNS support: to build thin client apps easily
     - **USB serial**: for running without WiFi
@@ -24,13 +24,12 @@ Overview:
     - **Automatic units conversion**: EspDRO works only with microns internally which means readings remain constant even if you change the units SAE<->metric while you measure. Keeps things simple.
     - **Self-documented Pinout**: for those instances when wires come loose and memory doesn't help
     - **mDNS advertising**: allows instrument names to be decoupled from knowing IP address
-    - **3D Printable SPC connector**: 
+    - **3D Printable SPC connector** ([also onthingiverse](https://www.thingiverse.com/thing:3141366)): 
         - All you need is 3 wires to make a SPC connector (4 wires if you want to power the instrument from ESP32, example using AMS1117 1.5v voltage regulator)
         - Tested to work on both calipers and indicators (slightly different commercial connectors).
-        - Thingiverse page: https://www.thingiverse.com/thing:3141366
+       
 
-
-Bacgkround:
+Background:
 ----
 This project started with my need to diagnose the positioning errors in one of my 3D printers: I had both 1-micron and 10-micron resolution indicators and calipers but measuring manually (write down readings from the instrument LCD) would have taken way too much time and effort. Since I had an ESP32 laying around, I figured I'd give that a try and I was amazed how easy it was to automate the whole thing: command the 3D printer via G-Code, then read the calipers/indicator via ESP32. Of course that in the process of building the instrument people seeing the data started asking for the firmware, so I decided to put some "finishing touches" (yeah, that really means 10x more lines of code :) ) and publish it, but also as a PIF for others that have posted useful guides around this space and helped me build this quickly. That's how #EspDRO came up.
 
@@ -40,7 +39,7 @@ Installation:
 ----
 _Software prerequisites_:
 
-Arduino with ESP32 support, including [esp32fs filesystem uploader plugin](https://github.com/me-no-dev/arduino-esp32fs-plugin) 
+Arduino IDE (1.8.6) with [ESP32 support](https://github.com/espressif/arduino-esp32), including [esp32fs filesystem uploader plugin](https://github.com/me-no-dev/arduino-esp32fs-plugin) 
 
 _Hardware prerequisites_:
 - Espressif ESP32. The particular board this firmware was developed with is this (if yours is different, adjust dataPin and clockPin in the source): 
@@ -58,7 +57,7 @@ Validate the cable works and the pinout in the firmware is correct. If you have 
 Flash the webserver files (Tools->ESP32 Sketch Data Upload) and then upload the sketch/firmware. Start the serial monitor and you should see something like this:
 - ![serial monitor](images/serial_stream.png)
 
-Note: If you don't have an oscilliscope and the data is not coming through, there is a #define DEBUG_SIGNAL which you can use to calibrate the Analog Digital Converter. This will also tell you if the pins on ESP32 are actually getting any analog data, as different dev boards have the ADC1_0 and ADC1_3 pins mapped differently than DevKitC above.
+Note: If you don't have an oscilloscope and the data is not coming through, there is a #define DEBUG_SIGNAL which you can use to calibrate the Analog Digital Converter. This will also tell you if the pins on ESP32 are actually getting any analog data, as different dev boards have the ADC1_0 and ADC1_3 pins mapped differently than DevKitC above.
 
 Now navigate to the main page and set up WiFi:
 - ![main page](images/main_page.png)
