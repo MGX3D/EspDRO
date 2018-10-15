@@ -27,7 +27,8 @@ Overview:
     - **3D Printable SPC connector** ([also onthingiverse](https://www.thingiverse.com/thing:3141366)): 
         - All you need is 3 wires to make a SPC connector (4 wires if you want to power the instrument from ESP32, example using AMS1117 1.5v voltage regulator)
         - Tested to work on both calipers and indicators (slightly different commercial connectors).
-       
+
+[![video](https://img.youtube.com/vi/P8z91OxXOTo/0.jpg)](https://www.youtube.com/watch?v=P8z91OxXOTo)
 
 Background:
 ----
