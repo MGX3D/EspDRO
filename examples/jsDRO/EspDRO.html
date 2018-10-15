@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+ 
+   <head>
+      <script src="jsDRO.js"></script>
+   </head>
+ 
+   <body>
+      <h1>#EspDRO</h1>
+
+      <div>
+         X Axis (microns):
+         <span id="myDRO" style="color:#F22;background-color:#BDE;text-align:right;display:block;width:350px;font-size: 48px">No Data (disconnected)</span>
+
+         <br><br>
+         Sensor IP Address:<input id="ip" type="url" value="192.168.1.8:81" onfocusout="OpenWebsocket('ws://' + document.getElementById('ip').value);" />
+      </div>
+ 
+   </body>
+</html>
