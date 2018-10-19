@@ -66,6 +66,7 @@ unsigned char eepromSignature = 0x5A;
 
 bool client_mode = 1;
 bool stream_mode = 1;
+volatile bool debug_mode = 0;
 
 WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
@@ -84,12 +85,10 @@ void log(char *fmt, ... )
 int getBit() {
     int data;
 
-#if DEBUG_SIGNAL
-    // debug code to sample the data reads
-    int clk = analogRead(clockPin);
-    int d = analogRead(dataPin);
-    log("%6d %6d\n", clk, d);
-#endif
+    if (debug_mode) {
+      // debug code to sample the data reads
+      log("CLK:%6d DATA:%6d\n", analogRead(clockPin), analogRead(dataPin));
+    }
         
     int readTimeout = millis() + BIT_READ_TIMEOUT;
     while (analogRead(clockPin) > ADC_TRESHOLD) {
@@ -193,8 +192,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
             
         case WStype_CONNECTED:
             {
-                IPAddress ip = webSocket.remoteIP(num);
-                log("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+                log("[%u] Connected from %s url: '%s'\n", num, webSocket.remoteIP(num).toString().c_str(), payload);
 
                 // send message to client
                 webSocket.sendTXT(num, "Connected");
@@ -228,7 +226,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
 }
 
-// root HTTP request
+// root HTTP request - keep this in code in case there is any SPIFFS corruption
 void handle_root() {
   String content = "<!DOCTYPE HTML>\r\n<html><body>";
   content += "<h1>#EspDRO</h1><br>";
@@ -268,7 +266,7 @@ bool handleFS(String path)
     file.close();
     return true;    
   }
-  log("Error in SPIFFS request: '%s", path);
+  log("Error in SPIFFS request: '%s", path.c_str());
   return false;
 }
 
@@ -284,7 +282,7 @@ void setup() {
   dro_buffer[dro_index] = start_reading;
 
   Serial.begin(115200);
-  Serial.println("EspDRO 0.99.0 Initialized.");
+  log("EspDRO 0.99.0 Initialized.");
 
   analogReadResolution(11);
   
@@ -308,8 +306,7 @@ void setup() {
         essid += char(EEPROM.read(i));
       }
       
-      Serial.print("EEPROM SSID: ");
-      Serial.println(essid);
+      log("EEPROM SSID: %s", essid.c_str());
       for (int i = 32; i < 96; ++i)
       {
         epassword += char(EEPROM.read(i));
@@ -324,24 +321,19 @@ void setup() {
       epassword = password;
     }
     
-    Serial.print("\n\rConnecting to ");
-    Serial.print(essid);
+    log("\n\rConnecting to '%s'", essid.c_str());
     WiFi.begin(essid.c_str(), epassword.c_str());
   
     int retries=50;
     while ((WiFi.status() != WL_CONNECTED) && (retries-- > 0)) {
       delay(500);
-      Serial.print(".");
+      log(".");
     }
-    Serial.println("");
+    log("\n");
   }
   
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("");
-    Serial.print("Connected to ");
-    Serial.println(essid);
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
+  if (WiFi.status() == WL_CONNECTED) {    
+    log("\nConnected to '%s', IP: %s", essid.c_str(), WiFi.localIP().toString().c_str());
 
     if (!MDNS.begin("EspDRO")) {
       log("Error setting up MDNS responder.");
@@ -351,12 +343,10 @@ void setup() {
     
   } else {
       // fall-back to AP mode for setup
-      Serial.println("WiFi connection failed, running in AP mode");
+      log("WiFi connection failed, running in AP mode\n");
       WiFi.softAP(ssid, password);
   
-      IPAddress myIP = WiFi.softAPIP();
-      Serial.print("AP IP address: ");
-      Serial.println(myIP);
+      log("AP IP address: %s", WiFi.softAPIP().toString());
   }
    
   server.on("/", handle_root);
@@ -404,44 +394,37 @@ void setup() {
     String lpassword = server.arg("password");
     String reset = server.arg("reset");
     if (lssid.length() > 0 && lpassword.length() > 0) {
-      Serial.println("clearing eeprom");
+      log("Clearing eeprom...\n");
       for (int i = 0; i < 96; ++i) {
           EEPROM.write(i, 0);
       }
       
-      Serial.print("Saving SSID=");
       for (int i = 0; i < lssid.length(); ++i)
       {
         EEPROM.write(i, lssid[i]);
-        Serial.print(lssid[i]);
       }
                   
-      Serial.println(" password=");
       for (int i = 0; i < lpassword.length(); ++i)
       {
         EEPROM.write(32+i, lpassword[i]);
-        Serial.print(lpassword[i]); 
       }
 
       EEPROM.write(128, eepromSignature);
       EEPROM.commit();
-      Serial.println("");
-      Serial.println("EEPROM saved.");
+      log("EEPROM saved.\n");
       
       server.send(200, "application/json", "{\"Success\":\"WiFi settings saved to EEPROM. Reset to apply.\"}");
     }
     else if (reset.length() > 0) {
-      String content = "<!DOCTYPE HTML>\r\n<html>";
-      content += "<p>EEPROM settings cleared</p></html>";
-      Serial.println("Clearing EEPROM.");
+      log("Clearing EEPROM...\n");
       for (int i = 0; i < 96; ++i) {
         EEPROM.write(i, 0);
       }
 
-      EEPROM.write(128, ~eepromSignature);
-      
+      EEPROM.write(128, ~eepromSignature);      
       EEPROM.commit();
-      server.send(200, "text/html", content);
+      
+      server.send(200, "application/json", "{\"Success\":\"EEPROM settings cleared.\"}");
     } else {
       server.send(404, "application/json", "{\"Error\":\"404 not found\"}");
     }
@@ -455,20 +438,19 @@ void setup() {
   log("WebSockets server started");
 
   xTaskCreate(spcTask, "spcTask", 10000, NULL, 1, NULL); 
-  Serial.println("SPC Thread started");
+  log("SPC Thread started\n");
 
   SPIFFS.begin();
-  Serial.println("SPI Flash File System initialized");
+  log("SPI Flash File System initialized\n");
 
   server.onNotFound([]() {
     if (!handleFS(server.uri()))
       server.send(404, "text/plain", "404: Not Found (forgot to upload SPIFFS data?)");
   });
    
-  Serial.print("Free heap: ");
-  Serial.println(ESP.getFreeHeap());
+  log("Free heap: %u", ESP.getFreeHeap());
 
-  Serial.println("Serial commands:\n    stop - stop the streaming of data\n    start - start the streaming of data");
+  log("Serial commands:\n    stop - stop the streaming of data\n    start - start the streaming of data\n    debug - turn on/off ADC signal debugging\n");
 }
 
 
@@ -481,13 +463,15 @@ void loop(){
   if(Serial.available() > 0)
   {
       String serial_cmd = Serial.readStringUntil('\n');
-      Serial.println("Received: cmd='" + serial_cmd + "'");
+      log("Received: cmd='%s'", serial_cmd.c_str());
 
       if (serial_cmd.startsWith("stop")) {
         // serial_cmd.substring(14).toInt();
         stream_mode = 0;
       } else if (serial_cmd.startsWith("start")) {
         stream_mode = 1;
+      } else if (serial_cmd.startsWith("debug")) {
+        debug_mode = !debug_mode;
       }
   }
 
