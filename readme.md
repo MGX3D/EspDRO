@@ -28,6 +28,10 @@ Overview:
         - All you need is 3 wires to make a SPC connector (4 wires if you want to power the instrument from ESP32, example using AMS1117 1.5v voltage regulator)
         - Tested to work on both calipers and indicators (slightly different commercial connectors).
 
+**Web view**
+
+![EspDRO](images/EspDRO.gif)
+
 **Schematic**
 
 ![schematic](images/schematic.png)
@@ -64,16 +68,11 @@ Validate the cable works and the pinout in the firmware is correct. If you have 
 Flash the webserver files (Tools->ESP32 Sketch Data Upload) and then upload the sketch/firmware. Start the serial monitor and you should see something like this:
 - ![serial monitor](images/serial_stream.png)
 
-Note: If you don't have an oscilloscope and the data is not coming through, there is a #define DEBUG_SIGNAL which you can use to calibrate the Analog Digital Converter. This will also tell you if the pins on ESP32 are actually getting any analog data, as different dev boards have the ADC1_0 and ADC1_3 pins mapped differently than DevKitC above.
+Note: If you don't have an oscilloscope and the data is not coming through, there is a 'debug' serial command which you can use to calibrate the Analog Digital Converter. This will also tell you if the pins on ESP32 are actually getting any analog data, as different dev boards have the ADC1_0 and ADC1_3 pins mapped differently than DevKitC above.
 
 Now navigate to the main page and set up WiFi:
 - ![main page](images/main_page.png)
 - ![wifi setup](images/wifi_setup.png)
-
-Finally, you should see this:
-- ![EspDRO](images/esp_dro.png)
-
-
 
 Future plans (opportunities for contributors):
 ---
