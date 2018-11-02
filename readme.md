@@ -8,7 +8,7 @@ It costs $10-$20 to build (excluding instruments and time) and it's only 500 lin
 Overview:
 ---
 - Reads and re-transmits the instrumet data over multiple channels:
-    - **WebSockets broadcasting**: allows building simple, low latency clients (10 lines of code python sample [PyDRO](examples/PyDRO/) included as well as JavaScript/HTML [jsDRO](/examples/jsDRO) )
+    - **WebSockets broadcasting**: allows building simple, low latency clients (10 lines of code Python sample [PyDRO](examples/PyDRO/) included as well as JavaScript/HTML [jsDRO](/examples/jsDRO) )
     - **Built-in web server**:  allows reading the data from browser/phone/tablet without any additional apps. Big display!
     - **REST APIs** and mDNS support: to build thin client apps easily
     - **USB serial**: for running without WiFi
@@ -77,7 +77,7 @@ Now navigate to the main page and set up WiFi:
 Future plans (opportunities for contributors):
 ---
 - **Multi-Axis**: Currently only one instrument supported but it's possible to extend EspDRO to multi-axis ($TODO, soon)
-- **Time-of-Flight sensors**: One thing I'm really eager to add is (VL53L0X)[https://www.st.com/resource/en/datasheet/vl53l0x.pdf] Time-of-Flight sensor, this should be able to read at 15-50Hz and +/-3% accuracy and without touching (influencing) the measured object. 
+- **Time-of-Flight sensors**: One thing I'm really eager to add is [VL53L0X](https://www.st.com/resource/en/datasheet/vl53l0x.pdf) Time-of-Flight sensor, this should be able to read at 15-50Hz and +/-3% accuracy and without touching (influencing) the measured object. 
 - **TTL glass scale**:  these are more expensive devices used in large mill DROs and can have 0.5-5 microns accuracy and extreme lengths (1+ meters)
 - **Mill DRO functions**: implement common functions in DRO (find mid-point, center of circle, create hole patterns, datum points, absolute/incremental, memory, units conversion, etc)
 - **Live charting**: 1-3 axis charting directly built-in the web console: for example to build a print bed mesh map (or 2.5D/3D point cloud) or axis error scatter plot 
