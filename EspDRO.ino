@@ -254,7 +254,7 @@ String getContentType(String filename)
   else if (filename.endsWith(".js")) return "application/javascript";
   else if (filename.endsWith(".png")) return "image/png";
   else if (filename.endsWith(".jpg")) return "image/jpeg";
-  else if (filename.endsWith(".ico")) return "image/x-icon";  
+  else if (filename.endsWith(".ico")) return "image/x-icon";
   return "text/plain";
 }
 
@@ -349,15 +349,15 @@ void setup()
   
       log("AP IP address: %s", WiFi.softAPIP().toString().c_str());
   }
-   
+
   server.on("/", handle_root);
-    
+
   server.on("/peek", [](){    
     String webString = String(dro_buffer[dro_index].microns);
     server.send(200, "text/plain", webString); 
     delay(50);
   });
-   
+
   server.on("/raw", [](){      
     unsigned int ts = 0;
 
@@ -365,7 +365,7 @@ void setup()
     if(server.hasArg("ts")) {
       ts = server.arg("ts").toInt();
     }
-    
+
     String rawJSON;
     for(size_t offset = 1; offset <= DRO_BUFFER_SIZE; offset++) {
       if (dro_buffer[(dro_index + offset) % DRO_BUFFER_SIZE].microns != MIN_RANGE) {
@@ -382,7 +382,7 @@ void setup()
     server.send(200, "text/plain", rawJSON);
 
   });
-    
+
   server.on("/setup", [](){
     String content = "<!DOCTYPE HTML>\r\n<html>";
     content += "WiFi Setup<br></p><form method='get' action='settings'><label>SSID:</label><input name='ssid' length=32><br><label>Password:</label><input name='password' type=\"password\" length=64><br><input type=\"submit\" value=\"Save credentials\"></form><br><br><a href=\"/settings&reset=1\">Reset EEPROM</a></html>";
@@ -457,7 +457,6 @@ void setup()
 size_t last_dro_index = 0;
 void loop()
 {
-
   server.handleClient();
   webSocket.loop();
 
@@ -481,5 +480,4 @@ void loop()
       log("{\"axis0\":%d,\"ts\":%d}", dro_buffer[last_dro_index].microns, dro_buffer[last_dro_index].timestamp);
       last_dro_index = (last_dro_index+1) % DRO_BUFFER_SIZE;
   }
-
 }
