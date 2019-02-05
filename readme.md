@@ -55,7 +55,7 @@ Arduino IDE (1.8.6) with [ESP32 support](https://github.com/espressif/arduino-es
 _Hardware prerequisites_:
 - Espressif ESP32. The particular board this firmware was developed with is this (if yours is different, adjust dataPin and clockPin in the source): 
     - ![](https://raw.githubusercontent.com/gojimmypi/ESP32/master/images/myESP32%20DevKitC%20pinout.png)
-- SPC serial cable: if you don't have one you can use the [3D printable connector](CAD/spc_connector.stl), see [thingiverse page](https://www.thingiverse.com/thing:31413660) for more info. 
+- SPC serial cable: if you don't have one you can use the [3D printable connector](CAD/spc_connector.stl), see [thingiverse page](https://www.thingiverse.com/thing:3141366) for more info. 
     - ![](images/connector_render.jpg) ![](images/connector_bottom.jpg)
 - Digital scale, calipers or DRO matching the connector. Examples:
     - ![caliper](images/calipers.jpg) ![indicator](images/indicator.jpg)
